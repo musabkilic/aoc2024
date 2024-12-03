@@ -15,11 +15,10 @@ let text = File.ReadAllText(@"input")
 let ans1 =
     Regex.Matches(text, "mul\\([0-9][0-9]?[0-9]?,[0-9][0-9]?[0-9]?\\)")
     |> Array.ofSeq
-    |> Array.map (fun x ->
+    |> Array.sumBy (fun x ->
         x.Value[4 .. x.Value.Length - 2].Split(",")
         |> Array.map (int)
         |> fun y -> y[0] * y[1])
-    |> Array.sum
 
 let ans2 =
     (true,
