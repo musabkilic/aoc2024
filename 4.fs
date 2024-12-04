@@ -18,24 +18,68 @@ let lines =
 let ans1 =
     lines
     |> fun l ->
-        (Array.init (l |> Array2D.length1) (fun i -> l[i, *] |> String.concat "")
-         |> Array.sumBy (fun x -> (x |> Regex("XMAS").Count) + (x |> Regex("SAMX").Count)))
-        + (Array.init (l |> Array2D.length1) (fun i -> l[*, i] |> String.concat "")
-           |> Array.sumBy (fun x -> (x |> Regex("XMAS").Count) + (x |> Regex("SAMX").Count)))
-        + (Array.init (2 * (l |> Array2D.length1) - 1) (fun i ->
-            Array.init ((l |> Array2D.length1) - abs (i - (l |> Array2D.length1) + 1)) (fun j ->
-                match i with
-                | i when i < (l |> Array2D.length1) -> l[j, i - j]
-                | _ -> l[i - (l |> Array2D.length1) + 1 + j, (l |> Array2D.length1) - 1 - j])
-            |> String.concat "")
-           |> Array.sumBy (fun x -> (x |> Regex("XMAS").Count) + (x |> Regex("SAMX").Count)))
-        + (Array.init (2 * (l |> Array2D.length1) - 1) (fun i ->
-            Array.init ((l |> Array2D.length1) - abs (i - (l |> Array2D.length1) + 1)) (fun j ->
-                match i with
-                | i when i < (l |> Array2D.length1) -> l[(l |> Array2D.length1) - 1 - i + j, j]
-                | _ -> l[j, i - (l |> Array2D.length1) + 1 + j])
-            |> String.concat "")
-           |> Array.sumBy (fun x -> (x |> Regex("XMAS").Count) + (x |> Regex("SAMX").Count)))
+        l
+        |> Array2D.mapi (fun i j v ->
+            match j with
+            | j when j > (l |> Array2D.length2) - 4 -> 0
+            | _ ->
+                match v with
+                | "X" ->
+                    match (l[i, j + 1], l[i, j + 2], l[i, j + 3]) with
+                    | ("M", "A", "S") -> 1
+                    | _ -> 0
+                | "S" ->
+                    match (l[i, j + 1], l[i, j + 2], l[i, j + 3]) with
+                    | ("A", "M", "X") -> 1
+                    | _ -> 0
+                | _ -> 0
+            + match i with
+              | i when i > (l |> Array2D.length2) - 4 -> 0
+              | _ ->
+                  match v with
+                  | "X" ->
+                      match (l[i + 1, j], l[i + 2, j], l[i + 3, j]) with
+                      | ("M", "A", "S") -> 1
+                      | _ -> 0
+                  | "S" ->
+                      match (l[i + 1, j], l[i + 2, j], l[i + 3, j]) with
+                      | ("A", "M", "X") -> 1
+                      | _ -> 0
+                  | _ -> 0
+            + match i with
+              | i when i > (l |> Array2D.length2) - 4 -> 0
+              | _ ->
+                  match j with
+                  | j when j > (l |> Array2D.length2) - 4 -> 0
+                  | _ ->
+                      match v with
+                      | "X" ->
+                          match (l[i + 1, j + 1], l[i + 2, j + 2], l[i + 3, j + 3]) with
+                          | ("M", "A", "S") -> 1
+                          | _ -> 0
+                      | "S" ->
+                          match (l[i + 1, j + 1], l[i + 2, j + 2], l[i + 3, j + 3]) with
+                          | ("A", "M", "X") -> 1
+                          | _ -> 0
+                      | _ -> 0
+            + match i with
+              | i when i < 3 -> 0
+              | _ ->
+                  match j with
+                  | j when j > (l |> Array2D.length2) - 4 -> 0
+                  | _ ->
+                      match v with
+                      | "X" ->
+                          match (l[i - 1, j + 1], l[i - 2, j + 2], l[i - 3, j + 3]) with
+                          | ("M", "A", "S") -> 1
+                          | _ -> 0
+                      | "S" ->
+                          match (l[i - 1, j + 1], l[i - 2, j + 2], l[i - 3, j + 3]) with
+                          | ("A", "M", "X") -> 1
+                          | _ -> 0
+                      | _ -> 0)
+        |> Seq.cast<int>
+        |> Seq.sum
 
 let ans2 =
     lines
